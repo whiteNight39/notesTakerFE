@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Profile - NotesTaker</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header><a id="home" href="#">NotesTaker</a></header>
+
+<div class="profile-container">
+  <h2>User Profile</h2>
+
+  <div class="profile-info">
+<!--    <p id="Name"><strong>Name:</strong>Name!</p>-->
+<!--    <p id="Email"><strong>Email:</strong>Email!</p>-->
+    <p><strong>Name:</strong> <span id="Name">Name!</span></p>
+    <p><strong>Email:</strong> <span id="Email">Email!</span></p>
+
+  </div>
+
+  <div class="password-update">
+    <h3>Update Password</h3>
+    <form id="passwordForm">
+      <label for="oldPassword">Old Password</label>
+      <input type="password" id="oldPassword" name="oldPassword" required>
+
+      <label for="newPassword">New Password</label>
+      <input type="password" id="newPassword" name="newPassword" required>
+
+      <button type="submit">Update Password</button>
+    </form>
+  </div>
+</div>
+
+<footer><a id="logout" href="#">Log out</a> </footer>
+<script>
+
+  const userId = localStorage.getItem("userId");
+  const userName = localStorage.getItem("userName");
+  const userEmail = localStorage.getItem("userEmail");
+
+  if (!userId) {
+    window.location.href = "signin.html"; // Not signed in
+  } else {
+    document.getElementById("Name").textContent = `${userName}`;
+    document.getElementById("Email").textContent = `${userEmail}`;
+  }
+
+  document.getElementById("passwordForm").addEventListener("submit", function (e) {
+    e.preventDefault();
+
+    const oldPassword = document.getElementById("oldPassword").value;
+    const newPassword = document.getElementById("newPassword").value;
+    const userId = localStorage.getItem("userId");
+
+    fetch("http://localhost:8080/user/update-password", {
+      method: "PATCH",
+      headers: {"content-type": "application/json", "authorization": userId},
+      body: JSON.stringify({
+        userId: userId,
+        userOldPassword: oldPassword,
+        userNewPassword: newPassword
+      })
+  })
+
+            .then(res => {
+              return res.json().then(data => {
+                if (!res.ok) {
+                  throw new Error(data.userAPIResponseData || "Password could not be updated...\nTry again in a few minutes...");
+                }
+                return data;
+              });
+            })
+            .then(data => {
+              console.log("Full Response", data);
+              alert(data.userAPIResponseMessage);
+              window.location.href = "profile.html";
+            })
+            .catch(err => alert(err.message));
+  });
+
+  document.getElementById("logout").addEventListener("click", function (e) {
+    e.preventDefault();
+
+    localStorage.clear();
+    window.location.href = "index.html";
+  });
+
+  document.getElementById("home").addEventListener("click", function (e) {
+    e.preventDefault();
+
+    if (!userId) {
+      window.location.href = "index.html";
+    } else {
+      window.location.href = "dashboard.html";
+    }
+
+  });
+</script>
+
+</body>
+</html>

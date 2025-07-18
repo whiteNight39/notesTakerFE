@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>My Notes - NotesTaker</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header><a id="home" href="#">NotesTaker</a></header>
+
+<div class="notes-container">
+    <form id = "editNote">
+        <label for="title">Title</label>
+        <textarea id="title" name="title" class="title-box"></textarea>
+
+        <label for="content">Content</label>
+        <textarea id="content" name="content" class="content-box"></textarea>
+
+        <button type="submit">Edit Note</button>
+    </form>
+</div>
+
+<footer><a id="logout" href="#">Log out</a> </footer>
+<script>
+
+    const userId = localStorage.getItem("userId");
+    const notes = JSON.parse(localStorage.getItem("noteToBeEdited"));
+    console.log(notes)
+    // localStorage.removeItem("noteToBeEdited")
+
+    document.getElementById("home").addEventListener("click", function (e) {
+        e.preventDefault();
+
+        if (!userId) {
+            window.location.href = "index.html";
+        } else {
+            window.location.href = "dashboard.html";
+        }
+
+    });
+
+    if (!notes || notes.length === 0) {
+        alert("No note to edit... Returning to Notes...")
+        window.location.href = "notes.html";
+    } else {
+        document.getElementById("title").textContent = `${notes.noteTitle}`;
+        document.getElementById("content").textContent = `${notes.noteContent}`;
+    }
+
+    document.getElementById("editNote").addEventListener("submit", function (e) {
+        e.preventDefault();
+
+        const title = document.getElementById("title").value;
+        const content = document.getElementById("content").value;
+        const notes = JSON.parse(localStorage.getItem("noteToBeEdited"));
+        const noteId = notes.noteId;
+        const noteUserId = notes.noteUserId;
+        localStorage.removeItem("noteToBeEdited")
+
+        fetch("http://localhost:8080/note/update", {
+            method: "PATCH",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify({
+                noteId: noteId,
+                noteTitle: title,
+                noteContent: content,
+                noteUserId: noteUserId
+            })
+        })
+            .then(res => {
+                return res.json().then(data => {
+                    if (!res.ok) {
+                        throw new Error(data.noteAPIResponseData || "Note could not be edited...\nTry again in a few minutes...");
+                    }
+                    return data;
+                });
+            })
+            .then(data => {
+                console.log("Full Response", data);
+                alert(data.noteAPIResponseMessage);
+                window.location.href = "notes.html";
+            })
+            .catch(err => alert(err.message));
+    });
+
+    document.getElementById("logout").addEventListener("click", function (e) {
+        e.preventDefault();
+
+        localStorage.clear();
+        window.location.href = "index.html";
+    });
+
+    document.getElementById("home").addEventListener("click", function (e) {
+        e.preventDefault();
+
+        if (!userId) {
+            window.location.href = "index.html";
+        } else {
+            window.location.href = "dashboard.html";
+        }
+
+    });
+</script>
+</body>
+</html>
