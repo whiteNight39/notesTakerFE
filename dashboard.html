@@ -21,28 +21,31 @@
 <script>
   const userToken = localStorage.getItem("userToken");
 
-  const BASE_URL = "https://aa0e9d04a964.ngrok-free.app";
-  fetch(`${BASE_URL}/user/get-user`, {
-    method: "GET",
-    headers: {"Content-Type": "application/json",
-              "Authorization": `Bearer ${userToken}`},
-  })
-  .then(res => res.json())
-  .then(data => {
-    if (data.userAPIResponseCode !== "200") {
-      throw new Error(data.userAPIResponseData || "Failed to get user.")
-    }
-    console.log(data)
-    const user = data.userAPIResponseData;
-    const userName = user.userName;
-    document.getElementById("welcome").textContent = `Welcome, ${userName}`;
-  })
-  .catch(err => alert(err.message));
-
-
   if (!userToken) {
     alert("User not signed in!");
     window.location.href = "signin.html"; // Not signed in
+  } else {
+    const BASE_URL = "https://3f1ecb0a03d8.ngrok-free.app";
+
+    fetch(`${BASE_URL}/user/get-user`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${userToken}`
+      }
+    })
+            .then(res => res.json())
+            .then(data => {
+              console.log("User data:", data);
+              if (data.userAPIResponseCode !== "200") {
+                throw new Error(data.userAPIResponseData || "Failed to get user.");
+              }
+              // console.log("User data:", data);
+              const user = data.userAPIResponseData;
+              const userName = user.userName;
+              document.getElementById("welcome").textContent = `Welcome, ${userName}`;
+            })
+            .catch(err => alert(err.message));
   }
 
   document.getElementById("logout").addEventListener("click", function (e) {
