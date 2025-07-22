@@ -33,6 +33,11 @@
     const name = document.getElementById("name").value;
     const email = document.getElementById("email").value;
     const password = document.getElementById("password").value;
+    const submitBtn = this.querySelector("button[type='submit']");
+
+    // Disable button to prevent multiple clicks
+    submitBtn.disabled = true;
+    submitBtn.textContent = "Creating Account...";
 
     const BASE_URL = " https://4f6518a6f47f.ngrok-free.app";
     fetch(`${BASE_URL}/user/create`, {
@@ -59,7 +64,11 @@
       alert("Signup successful! Redirecting to login...");
       window.location.href = "signin.html";
     })
-    .catch(err => alert(err.message));
+    .catch(err => {
+      alert(err.message);
+      submitBtn.disabled = false;
+      submitBtn.textContent = "Sign Up";
+    });
   });
 </script>
 

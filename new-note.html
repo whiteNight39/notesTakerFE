@@ -33,6 +33,7 @@
 
     const title = document.getElementById("title").value;
     const content = document.getElementById("content").value;
+    const submitBtn = this.querySelector("button[type='submit']");
     // const userId = localStorage.getItem("userId");
 
     if (!userToken) {
@@ -40,6 +41,10 @@
       window.location.href = "signin.html"; // Not signed in
       return;
     }
+
+    // Disable button to prevent multiple clicks
+    submitBtn.disabled = true;
+    submitBtn.textContent = "Submitting...";
 
     const BASE_URL = " https://4f6518a6f47f.ngrok-free.app";
     fetch(`${BASE_URL}/note/create`, {
@@ -65,7 +70,11 @@
       alert("Note created successfully")
       window.location.href = "notes.html";
     })
-    .catch(err => alert(err.message));
+    .catch(err => {
+      alert(err.message);
+      submitBtn.disabled = false;
+      submitBtn.textContent = "Add Note";
+    });
   });
 
   document.getElementById("logout").addEventListener("click", function (e) {
