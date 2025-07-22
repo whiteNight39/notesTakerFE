@@ -50,7 +50,8 @@
     fetch(`${BASE_URL}/note/get-notes`, {
       method: "GET",
       headers: {"Content-Type": "application/json",
-                "Authorization": `Bearer ${userToken}`},
+                "Authorization": `Bearer ${userToken}`,
+        'ngrok-skip-browser-warning': 'true'},
     })
     .then(res => res.json())
     .then(data => {
@@ -126,7 +127,8 @@
     fetch(`${BASE_URL}/note/${noteId}`, {
       method: 'DELETE',
       headers: {"Content-Type": "application/json",
-                "Authorization": `Bearer ${userToken}`},
+                "Authorization": `Bearer ${userToken}`,
+        'ngrok-skip-browser-warning': 'true'},
       body: JSON.stringify({
         noteId: noteId
       })
@@ -170,7 +172,8 @@
     fetch(`${BASE_URL}/note/search?query=${encodeURIComponent(query)}`, {
       method: "GET",
       headers: {"Content-Type": "application/json",
-                "Authorization": `Bearer ${userToken}`},
+                "Authorization": `Bearer ${userToken}`,
+        'ngrok-skip-browser-warning': 'true'},
     })
     .then(res => res.json())
     .then(data => {

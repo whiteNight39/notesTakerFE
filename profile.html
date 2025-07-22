@@ -50,7 +50,8 @@
   fetch(`${BASE_URL}/user/get-user`, {
     method: "GET",
     headers: {"Content-Type": "application/json",
-      "Authorization": `Bearer ${userToken}`},
+      "Authorization": `Bearer ${userToken}`,
+      'ngrok-skip-browser-warning': 'true'},
   })
   .then(res => res.json())
   .then(data => {
@@ -77,7 +78,8 @@
     fetch(`${BASE_URL}/user/update-password`, {
       method: "PATCH",
       headers: {"Content-Type": "application/json",
-        "Authorization": `Bearer ${userToken}`},
+        "Authorization": `Bearer ${userToken}`,
+        'ngrok-skip-browser-warning': 'true'},
       body: JSON.stringify({
         userOldPassword: oldPassword,
         userNewPassword: newPassword
