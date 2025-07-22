@@ -47,10 +47,10 @@
     })
             .then(res => {
               console.log("Raw response status:", res.status);
-              return res.text().then(text => {
-                console.log("Raw response body:", text);
-                if (!res.ok) throw new Error(text || "Login failed");
-                return JSON.parse(text);
+              return res.json().then(data => {
+                console.log("Raw response body:", data);
+                if (!res.ok) throw new Error(data.userAPIResponseData || "Login failed");
+                return data;
               });
             })
     .then(data => {
