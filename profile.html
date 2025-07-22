@@ -46,7 +46,7 @@
     window.location.href = "signin.html"; // Not signed in
   }
 
-  const BASE_URL = "https://53f8ea322231.ngrok-free.app";
+  const BASE_URL = "https://6666e7296dd7.ngrok-free.app";
   fetch(`${BASE_URL}/user/get-user`, {
     method: "GET",
     headers: {"Content-Type": "application/json",
@@ -73,7 +73,7 @@
     const newPassword = document.getElementById("newPassword").value;
     const userId = localStorage.getItem("userId");
 
-    const BASE_URL = "https://53f8ea322231.ngrok-free.app";
+    const BASE_URL = "https://6666e7296dd7.ngrok-free.app";
     fetch(`${BASE_URL}/user/update-password`, {
       method: "PATCH",
       headers: {"Content-Type": "application/json",
