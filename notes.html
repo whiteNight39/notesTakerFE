@@ -26,43 +26,47 @@
 </div>
 
 <footer><a id="logout" href="#">Log out</a> </footer>
+
 <script>
-  const userId = localStorage.getItem("userId");
+  const userToken = localStorage.getItem("userToken");
   const container = document.getElementById("notes-container");
 
   document.getElementById("home").addEventListener("click", function (e) {
     e.preventDefault();
 
-    if (!userId) {
+    if (!userToken) {
       window.location.href = "index.html";
     } else {
       window.location.href = "dashboard.html";
     }
-
   });
 
-  if (!userId) {
+  if (!userToken) {
     alert("User not signed in!");
     window.location.href = "signin.html";
   } else {
     container.innerHTML = "<p>Loading notes...</p>";
-    fetch(`http://localhost:8080/note/${userId}`)
-            .then(res => res.json())
-            .then(data => {
-              console.log("response", data);
-              if (String(data.noteAPIResponseCode) !== "200") {
-                throw new Error(data.userAPIResponseData || "Failed to load notes.")
-              }
+    fetch("http://localhost:8080/note/get-notes", {
+      method: "GET",
+      headers: {"Content-Type": "application/json",
+                "Authorization": `Bearer ${userToken}`},
+    })
+    .then(res => res.json())
+    .then(data => {
+      console.log("response", data);
+      if (String(data.noteAPIResponseCode) !== "200") {
+        throw new Error(data.noteAPIResponseData || "Failed to load notes.")
+      }
 
-              const notes = data.noteAPIResponseData;
-              localStorage.setItem("userNotes", JSON.stringify(notes));
-              container.innerHTML = "";
-              renderNotes(notes);
-            })
-            .catch(err => {
-              localStorage.removeItem("userNotes");
-              container.innerHTML = `<p class="error">Error: ${err.message}</p>`;
-            });
+      const notes = data.noteAPIResponseData;
+      // localStorage.setItem("userNotes", JSON.stringify(notes));
+      container.innerHTML = "";
+      renderNotes(notes);
+    })
+    .catch(err => {
+      // localStorage.removeItem("userNotes");
+      container.innerHTML = `<p class="error">Error: ${err.message}</p>`;
+    });
   }
 
   function renderNotes(notes) {
@@ -94,19 +98,19 @@
         // Attach handlers
         noteDiv.querySelector(".edit-note").addEventListener("click", () => {
           console.log("Edit clicked for:", note);
-          localStorage.setItem("noteToBeEdited", JSON.stringify(note));
+          localStorage.setItem("noteIdToBeEdited", note.noteId);
           window.location.href = "note.html";
         });
 
         noteDiv.querySelector(".note-title").addEventListener("click", () => {
           console.log("Edit clicked for:", note);
-          localStorage.setItem("noteToBeEdited", JSON.stringify(note));
+          localStorage.setItem("noteIdToBeEdited", note.noteId);
           window.location.href = "note.html";
         });
 
         noteDiv.querySelector(".delete-note").addEventListener("click", () => {
           if (confirm("Are you sure you want to delete this note?")) {
-            deleteNote(note.noteUserId, note.noteId); // Needs to exist
+            deleteNote(note.noteId); // Needs to exist
           }
         });
 
@@ -115,30 +119,30 @@
     }
   }
 
-  function deleteNote(noteUserId, noteId) {
+  function deleteNote(noteId) {
 
-    fetch(`http://localhost:8080/note/${noteUserId}/${noteId}`, {
+    fetch(`http://localhost:8080/note/${noteId}`, {
       method: 'DELETE',
-      headers: {"Content-Type": "application/json"},
+      headers: {"Content-Type": "application/json",
+                "Authorization": `Bearer ${userToken}`},
       body: JSON.stringify({
-        userId: noteUserId,
         noteId: noteId
       })
     })
-            .then(res => {
-              return res.json().then(data => {
-                if (!res.ok) {
-                  throw new Error(data.userAPIResponseData || "Note failed to delete...\nTry again in a few minutes")
-                }
-                return data;
-              });
-            })
-            .then(data => {
-              console.log("Response", data);
-              alert("Note successfully deleted");
-              window.location.href = "notes.html";
-            })
-            .catch(err => alert(err.message));
+    .then(res => {
+      return res.json().then(data => {
+        if (!res.ok) {
+          throw new Error(data.noteAPIResponseData || "Note failed to delete...\nTry again in a few minutes")
+        }
+        return data;
+      });
+    })
+    .then(data => {
+      console.log("Response", data);
+      alert("Note successfully deleted");
+      window.location.href = "notes.html";
+    })
+    .catch(err => alert(err.message));
   }
 
   document.getElementById("logout").addEventListener("click", function (e) {
@@ -160,19 +164,23 @@
       return;
     }
 
-    fetch(`http://localhost:8080/note/${userId}/search?query=${encodeURIComponent(query)}`)
-            .then(res => res.json())
-            .then(data => {
-              if (String(data.noteAPIResponseCode) !== "200") {
-                throw new Error(data.userAPIResponseData || "Search failed");
-              }
+    fetch(`http://localhost:8080/note/search?query=${encodeURIComponent(query)}`, {
+      method: "GET",
+      headers: {"Content-Type": "application/json",
+                "Authorization": `Bearer ${userToken}`},
+    })
+    .then(res => res.json())
+    .then(data => {
+      if (String(data.noteAPIResponseCode) !== "200") {
+        throw new Error(data.userAPIResponseData || "Search failed");
+      }
 
-              const notes = data.noteAPIResponseData;
-              renderNotes(notes);
-            })
-            .catch(err => {
-              container.innerHTML = `<p class="error">Search Error: ${err.message}</p>`;
-            });
+      const notes = data.noteAPIResponseData;
+      renderNotes(notes);
+    })
+    .catch(err => {
+      container.innerHTML = `<p class="error">Search Error: ${err.message}</p>`;
+    });
   });
 
 </script>

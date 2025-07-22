@@ -26,15 +26,16 @@
 <footer><a id="logout" href="#">Log out</a> </footer>
 <script>
 
-  const userId = localStorage.getItem("userId");
+  const userToken = localStorage.getItem("userToken");
+
   document.getElementById("addNote").addEventListener("submit", function (e) {
     e.preventDefault();
 
     const title = document.getElementById("title").value;
     const content = document.getElementById("content").value;
-    const userId = localStorage.getItem("userId");
+    // const userId = localStorage.getItem("userId");
 
-    if (!userId) {
+    if (!userToken) {
       alert("User not signed in!");
       window.location.href = "signin.html"; // Not signed in
       return;
@@ -42,27 +43,27 @@
 
     fetch("http://localhost:8080/note/create", {
       method: "POST",
-      headers: {"Content-Type": "application/json"},
+      headers: {"Content-Type": "application/json",
+                "Authorization": `Bearer ${userToken}`},
       body: JSON.stringify({
         noteTitle: title,
-        noteContent: content,
-        noteUserId: userId
+        noteContent: content
       })
     })
-            .then(res => {
-              return res.json().then(data => {
-                if (!res.ok) {
-                  throw new Error(data.userAPIResponseData || "Note creation failed");
-                }
-                return data;
-              });
-            })
-            .then(data => {
-              console.log("Full response:", data);
-              alert("Note created successfully")
-              window.location.href = "notes.html";
-            })
-            .catch(err => alert(err.message));
+    .then(res => {
+      return res.json().then(data => {
+        if (!res.ok) {
+          throw new Error(data.userAPIResponseData || "Note creation failed");
+        }
+        return data;
+      });
+    })
+    .then(data => {
+      console.log("Full response:", data);
+      alert("Note created successfully")
+      window.location.href = "notes.html";
+    })
+    .catch(err => alert(err.message));
   });
 
   document.getElementById("logout").addEventListener("click", function (e) {
@@ -75,7 +76,7 @@
   document.getElementById("home").addEventListener("click", function (e) {
     e.preventDefault();
 
-    if (!userId) {
+    if (!userToken) {
       window.location.href = "index.html";
     } else {
       window.location.href = "dashboard.html";

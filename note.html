@@ -24,15 +24,15 @@
 <footer><a id="logout" href="#">Log out</a> </footer>
 <script>
 
-    const userId = localStorage.getItem("userId");
-    const notes = JSON.parse(localStorage.getItem("noteToBeEdited"));
-    console.log(notes)
-    // localStorage.removeItem("noteToBeEdited")
+    const userToken = localStorage.getItem("userToken");
+    const noteId = localStorage.getItem("noteIdToBeEdited");
+    localStorage.removeItem("noteIdToBeEdited")
+    console.log(noteId)
 
     document.getElementById("home").addEventListener("click", function (e) {
         e.preventDefault();
 
-        if (!userId) {
+        if (!userToken) {
             window.location.href = "index.html";
         } else {
             window.location.href = "dashboard.html";
@@ -40,12 +40,30 @@
 
     });
 
-    if (!notes || notes.length === 0) {
+    if (!noteId) {
         alert("No note to edit... Returning to Notes...")
         window.location.href = "notes.html";
     } else {
-        document.getElementById("title").textContent = `${notes.noteTitle}`;
-        document.getElementById("content").textContent = `${notes.noteContent}`;
+
+        fetch(`http://localhost:8080/note/get-note-by-id/${noteId}`, {
+            method: "GET",
+            headers: {"Content-Type": "application/json",
+                "Authorization": `Bearer ${userToken}`}
+        })
+        .then(res => res.json())
+        .then(data => {
+            console.log("response", data);
+            if (String(data.noteAPIResponseCode) !== "200") {
+                throw new Error(data.noteAPIResponseData || "Failed to load notes.")
+            }
+
+            const notes = data.noteAPIResponseData;
+            document.getElementById("title").textContent = `${notes.noteTitle}`;
+            document.getElementById("content").textContent = `${notes.noteContent}`;
+            // container.innerHTML = "";
+            // renderNotes(notes);
+        })
+
     }
 
     document.getElementById("editNote").addEventListener("submit", function (e) {
@@ -53,35 +71,35 @@
 
         const title = document.getElementById("title").value;
         const content = document.getElementById("content").value;
-        const notes = JSON.parse(localStorage.getItem("noteToBeEdited"));
-        const noteId = notes.noteId;
-        const noteUserId = notes.noteUserId;
-        localStorage.removeItem("noteToBeEdited")
+        // const notes = JSON.parse(localStorage.getItem("noteToBeEdited"));
+        // const noteId = localStorage.getItem("noteIdToBeEdited");
+        // const noteUserId = notes.noteUserId;
+        // localStorage.removeItem("noteToBeEdited")
 
         fetch("http://localhost:8080/note/update", {
             method: "PATCH",
-            headers: {"Content-Type": "application/json"},
+            headers: {"Content-Type": "application/json",
+                "Authorization": `Bearer ${userToken}`},
             body: JSON.stringify({
                 noteId: noteId,
                 noteTitle: title,
-                noteContent: content,
-                noteUserId: noteUserId
+                noteContent: content
             })
         })
-            .then(res => {
-                return res.json().then(data => {
-                    if (!res.ok) {
-                        throw new Error(data.noteAPIResponseData || "Note could not be edited...\nTry again in a few minutes...");
-                    }
-                    return data;
-                });
-            })
-            .then(data => {
-                console.log("Full Response", data);
-                alert(data.noteAPIResponseMessage);
-                window.location.href = "notes.html";
-            })
-            .catch(err => alert(err.message));
+        .then(res => {
+            return res.json().then(data => {
+                if (!res.ok) {
+                    throw new Error(data.noteAPIResponseData || "Note could not be edited...\nTry again in a few minutes...");
+                }
+                return data;
+            });
+        })
+        .then(data => {
+            console.log("Full Response", data);
+            alert(data.noteAPIResponseMessage);
+            window.location.href = "notes.html";
+        })
+        .catch(err => alert(err.message));
     });
 
     document.getElementById("logout").addEventListener("click", function (e) {
@@ -94,7 +112,7 @@
     document.getElementById("home").addEventListener("click", function (e) {
         e.preventDefault();
 
-        if (!userId) {
+        if (!userToken) {
             window.location.href = "index.html";
         } else {
             window.location.href = "dashboard.html";

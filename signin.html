@@ -38,25 +38,25 @@
         userPassword: password
       })
     })
-    .then(res => {
-      return res.json().then(data => {
-        if (!res.ok) {
-          throw new Error(data.userAPIResponseData || "Login failed");
-        }
-        return data;
-      });
-    })
+            .then(res => {
+              console.log("Raw response status:", res.status);
+              return res.text().then(text => {
+                console.log("Raw response body:", text);
+                if (!res.ok) throw new Error(text || "Login failed");
+                return JSON.parse(text);
+              });
+            })
     .then(data => {
       console.log("Full response:", data);
 
       const user = data.userAPIResponseData; // ✅ Correct key from your JSON
 
-      if (!user || !user.userId) {
+      if (!user || !user.userAuthJwtToken) {
         throw new Error("Invalid server response");
       }
 
-      localStorage.setItem("userId", user.userId);
-      localStorage.setItem("userName", user.userName);
+      localStorage.setItem("userToken", user.userAuthJwtToken);
+      // localStorage.setItem("userName", user.userName);
       localStorage.setItem("userEmail", email)
 
       window.location.href = "dashboard.html";

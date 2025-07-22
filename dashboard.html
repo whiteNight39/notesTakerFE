@@ -9,7 +9,7 @@
 
 <header><a id="home" href="#">NotesTaker</a></header>
 
-<h2 id="welcome">Welcome!</h2>
+<h2 id="welcome">Welcome, ...</h2>
 
 <main class="dashboard-container">
   <a href="notes.html" class="dashboard-link" id= "getNotes">📝 Notes</a>
@@ -17,32 +17,32 @@
 </main>
 
 <footer><a id="logout" href="#">Log out</a> </footer>
-<script>
-  const userId = localStorage.getItem("userId");
-  const userName = localStorage.getItem("userName");
 
-  if (!userId) {
+<script>
+  const userToken = localStorage.getItem("userToken");
+
+  fetch("http://localhost:8080/user/get-user", {
+    method: "GET",
+    headers: {"Content-Type": "application/json",
+              "Authorization": `Bearer ${userToken}`},
+  })
+  .then(res => res.json())
+  .then(data => {
+    if (data.userAPIResponseCode !== "200") {
+      throw new Error(data.userAPIResponseData || "Failed to get user.")
+    }
+    console.log(data)
+    const user = data.userAPIResponseData;
+    const userName = user.userName;
+    document.getElementById("welcome").textContent = `Welcome, ${userName}`;
+  })
+  .catch(err => alert(err.message));
+
+
+  if (!userToken) {
     alert("User not signed in!");
     window.location.href = "signin.html"; // Not signed in
-  } else {
-    document.getElementById("welcome").textContent = `Welcome, ${userName}`;
   }
-
-  // document.getElementById("getNotes").addEventListener("click", function (e) {
-  //   e.preventDefault();
-  //
-  //   fetch(`http://localhost:8080/note/${userId}`)
-  //           .then(res => res.json())
-  //           .then(data => {
-  //             if (data.noteAPIResponseCode !== "200") {
-  //               throw new Error(data.userAPIResponseData || "Failed to load notes.")
-  //             }
-  //
-  //             localStorage.setItem("userNotes", JSON.stringify(data.noteAPIResponseData));
-  //             window.location.href = "notes.html";
-  //           })
-  //           .catch(err => alert(err.message));
-  // })
 
   document.getElementById("logout").addEventListener("click", function (e) {
     e.preventDefault();

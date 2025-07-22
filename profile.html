@@ -15,8 +15,8 @@
   <div class="profile-info">
 <!--    <p id="Name"><strong>Name:</strong>Name!</p>-->
 <!--    <p id="Email"><strong>Email:</strong>Email!</p>-->
-    <p><strong>Name:</strong> <span id="Name">Name!</span></p>
-    <p><strong>Email:</strong> <span id="Email">Email!</span></p>
+    <p><strong>Name:</strong> <span id="Name">...</span></p>
+    <p><strong>Email:</strong> <span id="Email">...</span></p>
 
   </div>
 
@@ -35,18 +35,35 @@
 </div>
 
 <footer><a id="logout" href="#">Log out</a> </footer>
+
 <script>
 
-  const userId = localStorage.getItem("userId");
-  const userName = localStorage.getItem("userName");
+  const userToken = localStorage.getItem("userToken");
   const userEmail = localStorage.getItem("userEmail");
 
-  if (!userId) {
+  if (!userToken) {
+    alert("User not signed in!");
     window.location.href = "signin.html"; // Not signed in
-  } else {
-    document.getElementById("Name").textContent = `${userName}`;
-    document.getElementById("Email").textContent = `${userEmail}`;
   }
+
+  fetch("http://localhost:8080/user/get-user", {
+    method: "GET",
+    headers: {"Content-Type": "application/json",
+      "Authorization": `Bearer ${userToken}`},
+  })
+  .then(res => res.json())
+  .then(data => {
+    if (data.userAPIResponseCode !== "200") {
+      throw new Error(data.userAPIResponseData || "Failed to get user.")
+    }
+    console.log(data)
+    const user = data.userAPIResponseData;
+    const userName = user.userName;
+    document.getElementById("Name").textContent = `${userName}`;
+  })
+  .catch(err => alert(err.message));
+
+  document.getElementById("Email").textContent = `${userEmail}`;
 
   document.getElementById("passwordForm").addEventListener("submit", function (e) {
     e.preventDefault();
@@ -57,29 +74,28 @@
 
     fetch("http://localhost:8080/user/update-password", {
       method: "PATCH",
-      headers: {"content-type": "application/json", "authorization": userId},
+      headers: {"Content-Type": "application/json",
+        "Authorization": `Bearer ${userToken}`},
       body: JSON.stringify({
-        userId: userId,
         userOldPassword: oldPassword,
         userNewPassword: newPassword
       })
-  })
-
-            .then(res => {
-              return res.json().then(data => {
-                if (!res.ok) {
-                  throw new Error(data.userAPIResponseData || "Password could not be updated...\nTry again in a few minutes...");
-                }
-                return data;
-              });
-            })
-            .then(data => {
-              console.log("Full Response", data);
-              alert(data.userAPIResponseMessage);
-              window.location.href = "profile.html";
-            })
-            .catch(err => alert(err.message));
-  });
+    })
+    .then(res => {
+      return res.json().then(data => {
+        if (!res.ok) {
+          throw new Error(data.userAPIResponseData || "Password could not be updated...\nTry again in a few minutes...");
+        }
+        return data;
+      });
+    })
+    .then(data => {
+      console.log("Full Response", data);
+      alert(data.userAPIResponseMessage);
+      window.location.href = "profile.html";
+    })
+    .catch(err => alert(err.message));
+    });
 
   document.getElementById("logout").addEventListener("click", function (e) {
     e.preventDefault();
@@ -91,7 +107,7 @@
   document.getElementById("home").addEventListener("click", function (e) {
     e.preventDefault();
 
-    if (!userId) {
+    if (!userToken) {
       window.location.href = "index.html";
     } else {
       window.location.href = "dashboard.html";

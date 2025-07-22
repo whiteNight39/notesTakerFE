@@ -44,6 +44,7 @@
       })
     })
     .then(res => {
+      console.log("Raw response status:", res.status);
       return res.json().then(data => {
         if (!res.ok) {
           throw new Error(data.userAPIResponseData || "Sign-up Failed");
