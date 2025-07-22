@@ -46,7 +46,8 @@
     window.location.href = "signin.html";
   } else {
     container.innerHTML = "<p>Loading notes...</p>";
-    fetch("http://localhost:8080/note/get-notes", {
+    const BASE_URL = "https://46b37d70cc70.ngrok-free.app";
+    fetch(`${BASE_URL}/note/get-notes`, {
       method: "GET",
       headers: {"Content-Type": "application/json",
                 "Authorization": `Bearer ${userToken}`},
@@ -121,7 +122,8 @@
 
   function deleteNote(noteId) {
 
-    fetch(`http://localhost:8080/note/${noteId}`, {
+    const BASE_URL = "https://46b37d70cc70.ngrok-free.app";
+    fetch(`${BASE_URL}/note/${noteId}`, {
       method: 'DELETE',
       headers: {"Content-Type": "application/json",
                 "Authorization": `Bearer ${userToken}`},
@@ -164,7 +166,8 @@
       return;
     }
 
-    fetch(`http://localhost:8080/note/search?query=${encodeURIComponent(query)}`, {
+    const BASE_URL = "https://46b37d70cc70.ngrok-free.app";
+    fetch(`${BASE_URL}/note/search?query=${encodeURIComponent(query)}`, {
       method: "GET",
       headers: {"Content-Type": "application/json",
                 "Authorization": `Bearer ${userToken}`},

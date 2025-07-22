@@ -45,7 +45,8 @@
         window.location.href = "notes.html";
     } else {
 
-        fetch(`http://localhost:8080/note/get-note-by-id/${noteId}`, {
+        const BASE_URL = "https://46b37d70cc70.ngrok-free.app";
+        fetch(`${BASE_URL}/note/get-note-by-id/${noteId}`, {
             method: "GET",
             headers: {"Content-Type": "application/json",
                 "Authorization": `Bearer ${userToken}`}
@@ -76,7 +77,8 @@
         // const noteUserId = notes.noteUserId;
         // localStorage.removeItem("noteToBeEdited")
 
-        fetch("http://localhost:8080/note/update", {
+        const BASE_URL = "https://46b37d70cc70.ngrok-free.app";
+        fetch(`${BASE_URL}/note/update`, {
             method: "PATCH",
             headers: {"Content-Type": "application/json",
                 "Authorization": `Bearer ${userToken}`},
