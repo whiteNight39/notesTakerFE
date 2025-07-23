@@ -25,8 +25,8 @@
     alert("User not signed in!");
     window.location.href = "signin.html"; // Not signed in
   } else {
-    const BASE_URL = "https://7993cbcafa64.ngrok-free.app";
 
+    const BASE_URL = import.meta.env.VITE_API_BASE_URL; // for Vite/ES Modules
     fetch(`${BASE_URL}/user/get-user`, {
       method: "GET",
       headers: {
