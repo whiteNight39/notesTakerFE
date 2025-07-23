@@ -27,6 +27,7 @@
 
 <footer><a id="logout" href="#">Log out</a> </footer>
 
+<script src="config.js"></script>
 <script>
   const userToken = localStorage.getItem("userToken");
   const container = document.getElementById("notes-container");
@@ -46,7 +47,7 @@
     window.location.href = "signin.html";
   } else {
     container.innerHTML = "<p>Loading notes...</p>";
-    const BASE_URL = import.meta.env.VITE_API_BASE_URL; // for Vite/ES Modules;
+    // const BASE_URL = import.meta.env.VITE_API_BASE_URL; // for Vite/ES Modules;
     fetch(`${BASE_URL}/note/get-notes`, {
       method: "GET",
       headers: {"Content-Type": "application/json",
@@ -123,7 +124,7 @@
 
   function deleteNote(noteId) {
 
-    const BASE_URL = import.meta.env.VITE_API_BASE_URL; // for Vite/ES Modules;
+    // const BASE_URL = import.meta.env.VITE_API_BASE_URL; // for Vite/ES Modules;
     fetch(`${BASE_URL}/note/${noteId}`, {
       method: 'DELETE',
       headers: {"Content-Type": "application/json",
@@ -171,7 +172,7 @@
       return;
     }
 
-    const BASE_URL = import.meta.env.VITE_API_BASE_URL; // for Vite/ES Modules;
+    // const BASE_URL = import.meta.env.VITE_API_BASE_URL; // for Vite/ES Modules;
     fetch(`${BASE_URL}/note/search?query=${encodeURIComponent(query)}`, {
       method: "GET",
       headers: {"Content-Type": "application/json",

@@ -22,6 +22,7 @@
 </div>
 
 <footer><a id="logout" href="#">Log out</a> </footer>
+<script src="config.js"></script>
 <script>
 
     const userToken = localStorage.getItem("userToken");
@@ -45,7 +46,7 @@
         window.location.href = "notes.html";
     } else {
 
-        const BASE_URL = import.meta.env.VITE_API_BASE_URL; // for Vite/ES Modules;
+        // const BASE_URL = import.meta.env.VITE_API_BASE_URL; // for Vite/ES Modules;
         fetch(`${BASE_URL}/note/get-note-by-id/${noteId}`, {
             method: "GET",
             headers: {"Content-Type": "application/json",
@@ -84,7 +85,7 @@
         submitBtn.disabled = true;
         submitBtn.textContent = "Submitting...";
 
-        const BASE_URL = import.meta.env.VITE_API_BASE_URL; // for Vite/ES Modules;
+        // const BASE_URL = import.meta.env.VITE_API_BASE_URL; // for Vite/ES Modules;
         fetch(`${BASE_URL}/note/update`, {
             method: "PATCH",
             headers: {"Content-Type": "application/json",

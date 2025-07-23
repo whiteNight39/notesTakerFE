@@ -8,3 +8,6 @@
 # Datasource local storage ignored files
 /dataSources/
 /dataSources.local.xml
+
+# Frontend config for BASE_URL (ignored to avoid pushing ngrok URLs)
+config.js

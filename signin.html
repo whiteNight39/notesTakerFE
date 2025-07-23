@@ -23,6 +23,7 @@
 </div>
 
 <!--<footer><a id="logout" href="#">Log out</a> </footer>-->
+<script src="config.js"></script>
 <script>
   document.getElementById("signinForm").addEventListener("submit", function (e) {
     e.preventDefault();
@@ -35,7 +36,7 @@
     submitBtn.disabled = true;
     submitBtn.textContent = "Signing In...";
 
-    const BASE_URL = import.meta.env.VITE_API_BASE_URL; // for Vite/ES Modules
+    // const BASE_URL = import.meta.env.VITE_API_BASE_URL; // for Vite/ES Modules
     fetch(`${BASE_URL}/user/signin`, {
       method: "POST",
       headers: {"Content-Type": "application/json",
